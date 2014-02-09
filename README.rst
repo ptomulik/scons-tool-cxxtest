@@ -59,5 +59,6 @@ See license text in **__init__.py**.
 .. _CxxTest: http://cxxtest.com/
 .. _CxxTest Repository: https://github.com/CxxTest/cxxtest
 .. _scons-tool-cxxtest: https://github.com/ptomulik/scons-tool-cxxtest
+.. _SCons: http://scons.org
 
 .. <!--- vim: set expandtab tabstop=2 shiftwidth=2 syntax=rst: -->

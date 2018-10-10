@@ -1,6 +1,10 @@
 scons-tool-cxxtest
 ==================
 
+.. image:: https://badge.fury.io/py/scons-tool-cxxtest.svg
+    :target: https://badge.fury.io/py/scons-tool-cxxtest
+    :alt: PyPi package version
+
 .. image:: https://travis-ci.org/ptomulik/scons-tool-cxxtest.svg?branch=master
     :target: https://travis-ci.org/ptomulik/scons-tool-cxxtest
     :alt: Travis CI build status

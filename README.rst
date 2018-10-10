@@ -17,7 +17,7 @@ First, install CxxTest framework, for example (Debian)::
 Installing with pipenv
 ^^^^^^^^^^^^^^^^^^^^^^
 
-You should use this in projects using pipenv
+Use this method in projects using pipenv_
 
 .. code-block:: shell
 
@@ -86,5 +86,6 @@ See license text in **__init__.py**.
 .. _CxxTest Repository: https://github.com/CxxTest/cxxtest
 .. _scons-tool-cxxtest: https://github.com/ptomulik/scons-tool-cxxtest
 .. _SCons: http://scons.org
+.. _pipenv: https://pipenv.readthedocs.io/
 
 .. <!--- vim: set expandtab tabstop=2 shiftwidth=2 syntax=rst: -->

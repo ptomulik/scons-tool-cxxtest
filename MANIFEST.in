@@ -1,0 +1,6 @@
+#!
+
+exclude ./runtest.py
+prune ./bin
+prune ./testing
+prunt ./cxxtest

@@ -8,6 +8,19 @@
 .scon*
 /build/
 
+# Pipenv, setuptools, etc.
+/pipenv
+/Pipfile.lock
+.venv/
+/dist/
+/build/
+/wheelhouse/
+/dsklayout-*
+*.egg-info
+*.tox
+*.deb
+/MANIFEST
+
 # My favorite garbage filenames
 /err
 /out
@@ -19,5 +32,12 @@ __pycache__
 
 
 site_scons/
+
+# Scons testing framework
+/runtest.py
+/testing/
+
+# CxxTest
+/cxxtest/
 
 # vim: set syntax=conf tabstop=2 expandtab nospell:

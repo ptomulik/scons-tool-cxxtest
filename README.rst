@@ -1,17 +1,38 @@
 scons-tool-cxxtest
 ==================
 
+.. image:: https://travis-ci.org/ptomulik/scons-tool-cxxtest.svg?branch=master
+    :target: https://travis-ci.org/ptomulik/scons-tool-cxxtest
+    :alt: Travis CI build status
+
 SCons_ tool to compile and run unit tests based on CxxTest_ framework. This tool is extracted from sources found at `CxxTest Repository`_.
 
-Usage example
--------------
+Installation
+------------
 
 First, install CxxTest framework, for example (Debian)::
 
     sudo apt-get install cxxtest
 
-Git-based projects
-^^^^^^^^^^^^^^^^^^
+Installing with pipenv
+^^^^^^^^^^^^^^^^^^^^^^
+
+You should use this in projects using pipenv
+
+.. code-block:: shell
+
+      pipenv install --dev scons-tool-cxxtest
+
+Alternativelly, you may add the following snippet to your ``Pipfile``
+
+.. code-block::
+
+   [dev-packages]
+   scons-tool-cxxtest = "*"
+
+
+Installing as a git submodule
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #. Create new git repository::
 
@@ -22,6 +43,9 @@ Git-based projects
 #. Add the `scons-tool-cxxtest`_ as a submodule::
 
       git submodule add git://github.com/ptomulik/scons-tool-cxxtest.git site_scons/site_tools/cxxtest
+
+Usage example
+-------------
 
 #. Create simple test file
 
@@ -47,7 +71,9 @@ Git-based projects
       env = Environment(tools = ['default', 'cxxtest'])
       env.CxxTest('MyTestSuite1')
 
-#. Try it out::
+#. Try it out:
+
+   .. code-block:: shell
 
       scons check
 

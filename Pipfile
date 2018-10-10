@@ -1,0 +1,11 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+scons = ">=3.0.1"
+twine = "*"
+
+[requires]
+python = "3.6"

@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 #
-# Copyright (c) 2014-2018 by Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+# Copyright (c) 2018 by Paweł Tomulik <ptomulik@meil.pw.edu.pl>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -23,24 +24,28 @@
 #
 
 import TestSCons
-import re
+import sys
+import os
 
 _exe = TestSCons._exe
-test = TestSCons.TestSCons()
+_obj = TestSCons._obj
 
-##if not test.where_is('cxxtest'):
-##    test.skip_test("Could not find 'clang', skipping test.\n")
+if sys.platform == 'win32':
+    test = TestSCons.TestSCons(program='scons.bat', interpreter=None)
+else:
+    test = TestSCons.TestSCons()
 
-test.file_fixture('../../../__init__.py', 'site_scons/site_tools/cxxtest/__init__.py')
-test.dir_fixture('../../../cxxtest', 'cxxtest')
+test.subdir('cxxtest')
+try:
+    test.dir_fixture('../../../../cxxtest', 'cxxtest')
+except OSError:
+    # test with other cxxtest, if there is no cxxtest in project tree
+    pass
 
-test.write('SConstruct', """
-DefaultEnvironment(tools=[])
-env = Environment(tools=['default', 'cxxtest'])
-env.CxxTest('MyTestSuite1')
-""")
+test.file_fixture('../../../../__init__.py', 'site_scons/site_tools/cxxtest/__init__.py')
+test.file_fixture('../../../../about.py', 'site_scons/site_tools/cxxtest/about.py')
 
-test.write('MyTestSuite1.t.h', """\
+test.write('MyTestSuite1.t.h', r"""\
 // MyTestSuite1.t.h
 #include <cxxtest/TestSuite.h>
 class MyTestSuite1 : public CxxTest::TestSuite
@@ -54,9 +59,28 @@ void testAddition(void)
 };
 """)
 
-test.run(['check'])
+test.write('SConstruct', r"""\
+import sconstool.loader
+sconstool.loader.extend_toolpath(transparent=True)
+env = Environment(tools=['default', 'cxxtest'])
+env.Program('MyTestSuite1.t.h')
+""")
 
-test.must_contain_all_lines(test.stdout(), ['MyTestSuite1', 'OK!'])
+test.run()
+
+test.must_exist('MyTestSuite1.t.cpp')
+test.must_exist('MyTestSuite1.t%s' % _obj)
+test.must_exist('MyTestSuite1.t%s' % _exe)
+
+test.run(program=test.workpath('MyTestSuite1.t%s' % _exe),
+         stdout='Running cxxtest tests (1 test)',
+         match=lambda a,e: a.find(e) != -1)
+
+test.run(['-c'])
+test.must_not_exist('MyTestSuite1.t.cpp')
+test.must_not_exist('MyTestSuite1.t%s' % _obj)
+test.must_not_exist('MyTestSuite1.t%s' % _exe)
+
 test.pass_test()
 
 # Local Variables:

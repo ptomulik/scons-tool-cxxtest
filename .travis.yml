@@ -2,23 +2,31 @@ language:
   python
 
 python:
+  - 2.7
   - 3.5
   - 3.6
   - 3.7-dev
 
+env:
+  - LOCAL_CXXTEST=true
+  - LOCAL_CXXTEST=false
+
 addons:
   apt:
     packages:
-      - clang
-
-env:
-  - PIPENV_IGNORE_VIRTUALENVS=1
+      - cxxtest
 
 install:
-  - pip install -U pipenv
-  - pipenv --version
-  - pipenv install --dev
-  - pipenv run python bin/downloads.py
+  - pip install -U pip
+  - pip --version
+  - pip install -r requirements.txt
+  - pip install -r requirements-dev.txt
+  - python bin/downloads.py scons-test
+  - if $LOCAL_CXXTEST; then python bin/downloads.py cxxtest; fi
+
+
+before_script:
+  - which python
 
 script:
-  - pipenv run python ./runtest.py -e -a
+  - python runtest --verbose=2 -e test/system

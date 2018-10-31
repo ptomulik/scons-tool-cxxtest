@@ -82,7 +82,7 @@ Usage example
 
       // MyTestSuite.t.h
       #include <cxxtest/TestSuite.h>
-      class MyTestSuite1 : public CxxTest::TestSuite
+      class MyTestSuite : public CxxTest::TestSuite
       {
       public:
         void testAddition(void)

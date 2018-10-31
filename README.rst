@@ -80,7 +80,7 @@ Usage example
 
    .. code-block:: cpp
 
-      // MyTestSuite1.t.h
+      // MyTestSuite.t.h
       #include <cxxtest/TestSuite.h>
       class MyTestSuite1 : public CxxTest::TestSuite
       {

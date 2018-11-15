@@ -44,58 +44,52 @@ try:
 except ImportError:
     import sconstool.cxxtestgen as cxxtestgen
 try:
-    from site_tools.util import Selector
+    from site_tools.util import Selector, \
+                                Replacements, \
+                                ReplacingBuilder, \
+                                ReplacingAction
 except ImportError:
-    from sconstool.util import Selector
+    from sconstool.util import Selector, \
+                               Replacements, \
+                               ReplacingBuilder, \
+                               ReplacingAction
 
-commonVars = [
-    ('OBJPREFIX', None),
-    ('OBJSUFFIX', None),
+
+CxxTestVars = [
+    'OBJPREFIX',
+    'OBJSUFFIX',
+    'CXX',
+    'CCFLAGS',
+    'CXXFLAGS',
+    'CPPFLAGS',
+    'CPPDEFINES',
+    'CPPPATH',
+    'LINK',
+    'LINKFLAGS',
+    'LIBPATH',
+    'LIBS',
+    'LIBPREFIX',
+    'LIBSUFFIX',
+    'PROGPREFIX',
+    'PROGSUFFIX',
 ]
 
-cxxVars = [
-    ('CXX', None),
-    ('CCFLAGS', []),
-    ('CXXFLAGS', []),
-    ('CPPFLAGS', []),
-    ('CPPDEFINES', []),
-    ('CPPPATH', []),
-]
 
-linkVars = [
-    ('LINK', None),
-    ('LINKFLAGS', []),
-    ('LIBPATH', []),
-    ('LIBS', []),
-    ('LIBPREFIX', []),
-    ('LIBSUFFIX', []),
-    ('PROGPREFIX', None),
-    ('PROGSUFFIX', None)
-]
-
-
-class ActionWrapper(object):
-    """Wrapper for CXX and LINK actions. It simply replaces certain variables
-       with our own CXXTESTxxx variables."""
-    def __init__(self, action, variables):
-        self.action = action
-        self.variables = variables
-
-    def __getattr__(self, name):
-        return getattr(self.action, name)
-
-    def __call__(self, target, source, env, *args, **kw):
-        ovr = {v: env.get(('CXXTEST%s' % v), env.get(v, d)) for v, d in self.variables}
-        env = env.Override(ovr)
-        return self.action(target, source, env, *args, **kw)
-
-    def strfunction(self, target, source, env, *args, **kw):
-        return None
+CxxTestReplacements = Replacements({k: 'CXXTEST%s' % k for k in CxxTestVars})
 
 
 class TestRunnerAction(object):
     def __init__(self, action):
         self.action = action
+
+    def __getattr__(self, name):
+        return getattr(self.action, name)
+
+    def __setattr__(self, name, value):
+        if name in ('action',):
+            super(TestRunnerAction, self).__setattr__(name, value)
+        else:
+            setattr(self.action, name, value)
 
     def __call__(self, target, source, env, *args, **kw):
         result = 0
@@ -105,21 +99,27 @@ class TestRunnerAction(object):
                 result = r
         return result
 
-    def strfunction(self, target, source, env, *args, **kw):
-        return None
+
+class CxxTestLinkingBuilder(ReplacingBuilder):
+    def __call__(self, env, target, source, *args, **kw):
+        # preserve LIBPREFIXES and LIBSUFFIXES, so we'll still be able to
+        # link agains libraries with original $LIBPREFIX, $LIBSUFFIX etc.,
+        # even if someone sets $CXXTESTLIBPREFIX, $CXXTESTLIBSUFFIX, etc.
+        ovr = {'LIBPREFIXES': [env.subst(x) for x in env['LIBPREFIXES']],
+               'LIBSUFFIXES': [env.subst(x) for x in env['LIBSUFFIXES']]}
+        return ReplacingBuilder.__call__(self, env, target, source, *args, **dict(ovr, **kw))
 
 
-
-cxxAction = ActionWrapper(SCons.Defaults.CXXAction, cxxVars + commonVars)
-linkAction = ActionWrapper(SCons.Defaults.LinkAction, linkVars + commonVars)
+CxxTestCXXAction = ReplacingAction(SCons.Defaults.CXXAction, CxxTestReplacements)
 runAction = TestRunnerAction(SCons.Action.Action("$CXXTESTRUNCOM", "$CXXTESTRUNCOMSTR"))
+
 
 def createCxxTestObjBuilder(env):
     try:
         obj = env['BUILDERS']['CxxTestStaticObject']
     except KeyError:
         obj, _ = SCons.Tool.createObjBuilders(env)
-        obj = SCons.Builder.Builder(action=cxxAction,
+        obj = SCons.Builder.Builder(action=SCons.Defaults.CXXAction,
                                     emitter={},
                                     prefix='$CXXTESTOBJPREFIX',
                                     suffix='$CXXTESTOBJSUFFIX',
@@ -127,6 +127,7 @@ def createCxxTestObjBuilder(env):
                                     src_suffix='$CXXTESTGENSUFFIX',
                                     source_scanner=SCons.Tool.SourceFileScanner,
                                     single_source=1)
+        obj = ReplacingBuilder(obj, CxxTestReplacements)
         env['BUILDERS']['CxxTestStaticObject'] = obj
         env['BUILDERS']['CxxTestObject'] = obj
     return obj
@@ -137,13 +138,14 @@ def createCxxTestProgBuilder(env):
         prog = env['BUILDERS']['CxxTestProgram']
     except KeyError:
         prog = SCons.Tool.createProgBuilder(env)
-        prog = SCons.Builder.Builder(action=linkAction,
+        prog = SCons.Builder.Builder(action=SCons.Defaults.LinkAction,
                                      emitter='$PROGEMITTER',
                                      prefix='$CXXTESTPROGPREFIX',
                                      suffix='$CXXTESTPROGSUFFIX',
                                      src_suffix='$CXXTESTOBJSUFFIX',
                                      src_builder='CxxTestObject',
                                      target_scanner=SCons.Tool.ProgramScanner)
+        prog = CxxTestLinkingBuilder(prog, CxxTestReplacements)
         env['BUILDERS']['CxxTestProgram'] = prog
     return prog
 
@@ -199,7 +201,7 @@ def _CxxTestWrapper(env, target, source=None, root=[], **kw):
 
 def extendObjBuilders(env):
     obj, _ = SCons.Tool.createObjBuilders(env)
-    obj.add_action('.t.cpp', cxxAction)
+    obj.add_action('.t.cpp', CxxTestCXXAction)
     if SCons.Util.is_Dict(obj.suffix):
         obj.set_suffix(Selector(obj.suffix))
     else:
@@ -233,31 +235,16 @@ def findCxxTestIncludePath(env):
     return []
 
 
-def setCxxTestCxxDefaults(env):
+def setCxxTestDefaults(env):
+    #env.SetDefault(CXXTESTOBJPREFIX='$OBJPREFIX')
+    env.SetDefault(CXXTESTOBJSUFFIX=env.subst('.t$OBJSUFFIX'))
     env.SetDefault(CXXTESTINCLUDEPATH=findCxxTestIncludePath(env))
     env.SetDefault(CXXTESTCPPPATH=['$CXXTESTINCLUDEPATH', '$CPPPATH'])
-    # Same as a sequence of env.SetDefault(CXXTESTFOO="$FOO")
-    env.SetDefault(**{('CXXTEST%s' % k): ('$%s' % k) for k, _ in cxxVars})
-
-
-def setCxxTestLinkDefaults(env):
-    # Same as a sequence of env.SetDefault(CXXTESTFOO="$FOO")
-    env.SetDefault(**{('CXXTEST%s' % k): ('$%s' % k) for k, _ in linkVars})
-
-
-def setCxxTestRunDefaults(env):
     env.SetDefault(CXXTESTALIAS='check')
     env.SetDefault(CXXTESTRUNFLAGS=[])
     env.SetDefault(CXXTESTRUNCOM='$SOURCE.abspath $CXXTESTRUNFLAGS')
     env.SetDefault(CXXTESTRUNCOMSTR='$CXXTESTRUNCOM')
-
-
-def setCxxTestDefaults(env):
-    env.SetDefault(CXXTESTOBJPREFIX='$OBJPREFIX')
-    env.SetDefault(CXXTESTOBJSUFFIX='.t$OBJSUFFIX')
-    setCxxTestCxxDefaults(env)
-    setCxxTestLinkDefaults(env)
-    setCxxTestRunDefaults(env)
+    CxxTestReplacements.inject(env, 'SetDefault')
 
 
 def generate(env):

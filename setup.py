@@ -64,7 +64,7 @@ setup(
         author_email='ptomulik@meil.pw.edu.pl',
         cmdclass={'develop': develop, 'install': install},
         install_requires=['scons-tool-cxxtestgen >= 0.1.5',
-                          'scons-tool-util >= 0.1.8'],
+                          'scons-tool-util >= 0.1.9'],
         python_requires='>=2.7'
 )
 

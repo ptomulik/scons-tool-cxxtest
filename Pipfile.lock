@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c0935c8fc869bf26cd2c2caabe9672990342714dac6d683e1efcfb7ce9e4157c"
+            "sha256": "bb13a0cf2cfb214fc0dc5e719ec2669e157317e3f053d8b62ab3af11d5fe15ba"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -26,11 +26,11 @@
         },
         "scons-tool-util": {
             "hashes": [
-                "sha256:a463d20b660be1d33d479071c0626ca4bd06d00d0849bbbe76aee68cbb844172",
-                "sha256:fea41074232d0e6f1d02cc506b1bdcd69cdf55caf5d00e4dbcadd60df9ab21f7"
+                "sha256:3f3cc3c921bb470ddf68add54656e20e3f657623abce3fd8c7711b0182234bcc",
+                "sha256:dffe46b275a33d439a481b185c04b418efe6f395227f3fcd443d3b34c89ee988"
             ],
             "index": "pypi",
-            "version": "==0.1.8"
+            "version": "==0.1.9"
         }
     },
     "develop": {
@@ -93,10 +93,10 @@
         },
         "requests": {
             "hashes": [
-                "sha256:99dcfdaaeb17caf6e526f32b6a7b780461512ab3f1d992187801694cba42770c",
-                "sha256:a84b8c9ab6239b578f22d1c21d51b696dcfe004032bb80ea832398d6909d7279"
+                "sha256:65b3a120e4329e33c9889db89c80976c5272f56ea92d3e74da8a463992e3ff54",
+                "sha256:ea881206e59f41dbd0bd445437d792e43906703fff75ca8ff43ccdb11f33f263"
             ],
-            "version": "==2.20.0"
+            "version": "==2.20.1"
         },
         "requests-toolbelt": {
             "hashes": [
@@ -144,10 +144,10 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:41c3db2fc01e5b907288010dec72f9d0a74e37d6994e6eb56849f59fea2265ae",
-                "sha256:8819bba37a02d143296a4d032373c4dd4aca11f6d4c9973335ca75f9c8475f59"
+                "sha256:61bf29cada3fc2fbefad4fdf059ea4bd1b4a86d2b6d15e1c7c0b582b9752fe39",
+                "sha256:de9529817c93f27c8ccbfead6985011db27bd0ddfcdb2d86f3f663385c6a9c22"
             ],
-            "version": "==1.24"
+            "version": "==1.24.1"
         },
         "webencodings": {
             "hashes": [

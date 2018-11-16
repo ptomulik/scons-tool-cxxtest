@@ -77,7 +77,6 @@ CxxTestVars = [
 
 CxxTestReplacements = Replacements({k: 'CXXTEST%s' % k for k in CxxTestVars})
 
-
 class TestRunnerAction(object):
     def __init__(self, action):
         self.action = action
@@ -118,11 +117,10 @@ def createCxxTestObjBuilder(env):
     try:
         obj = env['BUILDERS']['CxxTestStaticObject']
     except KeyError:
-        obj, _ = SCons.Tool.createObjBuilders(env)
         obj = SCons.Builder.Builder(action=SCons.Defaults.CXXAction,
                                     emitter={},
-                                    prefix='$CXXTESTOBJPREFIX',
-                                    suffix='$CXXTESTOBJSUFFIX',
+                                    prefix='$OBJPREFIX',
+                                    suffix='$OBJSUFFIX',
                                     src_builder=['CxxTestGen'],
                                     src_suffix='$CXXTESTGENSUFFIX',
                                     source_scanner=SCons.Tool.SourceFileScanner,
@@ -137,12 +135,11 @@ def createCxxTestProgBuilder(env):
     try:
         prog = env['BUILDERS']['CxxTestProgram']
     except KeyError:
-        prog = SCons.Tool.createProgBuilder(env)
         prog = SCons.Builder.Builder(action=SCons.Defaults.LinkAction,
                                      emitter='$PROGEMITTER',
-                                     prefix='$CXXTESTPROGPREFIX',
-                                     suffix='$CXXTESTPROGSUFFIX',
-                                     src_suffix='$CXXTESTOBJSUFFIX',
+                                     prefix='$PROGPREFIX',
+                                     suffix='$PROGSUFFIX',
+                                     src_suffix='$OBJSUFFIX',
                                      src_builder='CxxTestObject',
                                      target_scanner=SCons.Tool.ProgramScanner)
         prog = CxxTestLinkingBuilder(prog, CxxTestReplacements)
@@ -201,7 +198,8 @@ def _CxxTestWrapper(env, target, source=None, root=[], **kw):
 
 def extendObjBuilders(env):
     obj, _ = SCons.Tool.createObjBuilders(env)
-    obj.add_action('.t.cpp', CxxTestCXXAction)
+    src_suffix = env.subst('$CXXTESTGENSUFFIX') or '.t.cpp'
+    obj.add_action(src_suffix, CxxTestCXXAction)
     if SCons.Util.is_Dict(obj.suffix):
         obj.set_suffix(Selector(obj.suffix))
     else:
@@ -236,8 +234,7 @@ def findCxxTestIncludePath(env):
 
 
 def setCxxTestDefaults(env):
-    #env.SetDefault(CXXTESTOBJPREFIX='$OBJPREFIX')
-    env.SetDefault(CXXTESTOBJSUFFIX=env.subst('.t$OBJSUFFIX'))
+    env.SetDefault(CXXTESTOBJSUFFIX='.t$OBJSUFFIX')
     env.SetDefault(CXXTESTINCLUDEPATH=findCxxTestIncludePath(env))
     env.SetDefault(CXXTESTCPPPATH=['$CXXTESTINCLUDEPATH', '$CPPPATH'])
     env.SetDefault(CXXTESTALIAS='check')

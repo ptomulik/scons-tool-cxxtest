@@ -2,7 +2,7 @@
 """Version information, etc."""
 
 #  DskLayout version info
-__version__ = '0.2.3'
+__version__ = '0.2.4'
 """Package version as a string."""
 
 # Local Variables:

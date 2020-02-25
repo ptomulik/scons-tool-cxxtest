@@ -57,21 +57,6 @@ Uploading to pypi.org_
 
    pipenv run twine upload dist/*
 
-Synchronizing requirements-dev.txt with Pipfile.lock
-----------------------------------------------------
-
-Python 3:
-
-.. code:: shell
-
-   pipenv lock -r --dev > requirements3-dev.txt
-
-Python 2:
-
-.. code:: shell
-
-   pipenv lock -r --dev > requirements2-dev.txt
-
 Generating HTML documentation
 -----------------------------
 

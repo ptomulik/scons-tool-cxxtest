@@ -166,7 +166,7 @@ _scons_versions = [
         '2.1.0.final.0'
 ]
 
-if sys.version_info.major == 2:
+if sys.version_info.major == 2 or (os.getenv('TOXENV') or '').startswith('py2'):
     _default_scons_version = '3.0.5'
 else:
     _default_scons_version = _scons_versions[0]

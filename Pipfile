@@ -8,7 +8,7 @@ scons-tool-cxxtestgen = ">=0.1.5"
 scons-tool-util = ">=0.1.9"
 
 [dev-packages]
-scons = ">=3.0.1"
+scons-select = { path = "./deps/scons-select" }
 twine = "*"
 scons-tool-loader = ">=0.1.9"
 

@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2018-2020 by Paweł Tomulik <ptomulik@meil.pw.edu.pl>
 #

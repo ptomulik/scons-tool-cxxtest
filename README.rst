@@ -12,7 +12,7 @@ scons-tool-cxxtest
 .. image:: https://ci.appveyor.com/api/projects/status/github/ptomulik/scons-tool-cxxtest?svg=true
     :target: https://ci.appveyor.com/project/ptomulik/scons-tool-cxxtest
 
-SCons_ tool to compile and run unit tests based on cxxtest_ framework.
+SCons_ tool for compiling and running unit tests based on cxxtest_ framework.
 
 Installation
 ------------
@@ -23,7 +23,7 @@ From pypi_
 ^^^^^^^^^^
 
 This method may be preferable if you build your project under a virtualenv. To
-add cxxtest tool from pypi_, type (within your wirtualenv):
+add cxxtest tool from pypi_, type (within your virtualenv):
 
 .. code-block:: shell
 
